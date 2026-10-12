@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>凡人修仙传 · 设计模式全解（完整手册）</title>
+<style>
+  :root{
+    --ink:#2C2C2A; --ink2:#5F5E5A; --ink3:#888780;
+    --line:#E6E4DC; --line2:#D3D1C7;
+    --bg:#F7F6F2; --card:#FFFFFF;
+    --blue50:#E6F1FB; --blue100:#B5D4F4; --blue600:#378ADD; --blue700:#185FA5; --blue800:#0C447C;
+    --amber50:#FAEEDA; --amber200:#FAC775; --amber600:#EF9F27; --amber700:#BA7517; --amber800:#854F0B;
+    --teal50:#E1F5EE; --teal200:#9FE1CB; --teal600:#1D9E75; --teal700:#0F6E56; --teal800:#085041;
+    --coral50:#FAECE7; --coral200:#F5C4B3; --coral600:#D85A30; --coral700:#993C1D; --coral800:#712B13;
+    --gray50:#F1EFE8; --gray200:#D3D1C7; --gray600:#888780; --gray700:#444441;
+    --purple50:#EEEDFE; --purple200:#CECBF6; --purple600:#7F77DD; --purple800:#3C3489;
+    --red600:#A32D2D;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    font-size:15px;line-height:1.75;-webkit-font-smoothing:antialiased;
+  }
+  .page{max-width:1160px;margin:0 auto;padding:64px 40px 88px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em}
+  a{color:inherit}
+
+  /* ---------- cover ---------- */
+  .cover{margin-bottom:48px}
+  .kicker{font-size:12px;letter-spacing:.22em;color:var(--ink3);margin-bottom:16px}
+  h1{font-size:48px;font-weight:600;margin:0 0 20px;letter-spacing:-.02em;line-height:1.14}
+  h1 em{font-style:normal;color:var(--amber600)}
+  .lede{font-size:16px;color:var(--ink2);max-width:740px;margin:0 0 26px}
+  .oneliner{
+    display:inline-block;padding:15px 22px;background:var(--amber50);
+    border-left:3px solid var(--amber600);border-radius:0 10px 10px 0;
+    font-size:15px;color:var(--amber800);font-weight:500;line-height:1.6;max-width:780px
+  }
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+  .stats span{font-size:12.5px;padding:6px 14px;border-radius:999px;background:var(--card);border:1px solid var(--line2);color:var(--gray700)}
+
+  /* ---------- toc ---------- */
+  .toc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 30px;margin-bottom:56px}
+  .toc-title{font-size:13px;letter-spacing:.16em;color:var(--ink3);margin-bottom:20px}
+  .toc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px 40px}
+  .toc-h{font-size:13px;font-weight:500;color:var(--amber700);margin-bottom:10px;letter-spacing:.06em}
+  .toc a{
+    display:flex;justify-content:space-between;gap:14px;align-items:baseline;
+    text-decoration:none;padding:7px 0;border-bottom:1px dashed var(--line);
+    font-size:13.5px;color:var(--ink)
+  }
+  .toc a:last-child{border-bottom:none}
+  .toc a:hover{color:var(--blue800)}
+  .toc a span{font-size:11.5px;color:var(--ink3);white-space:nowrap;text-align:right}
+
+  /* ---------- 卷 ---------- */
+  .vol{margin-bottom:56px;scroll-margin-top:24px}
+  .vol-head{display:flex;align-items:baseline;gap:16px;margin-bottom:8px;flex-wrap:wrap}
+  .vol-head h2{font-size:24px;font-weight:500;margin:0;letter-spacing:-.01em}
+  .vol-head .cn{font-size:12px;font-weight:500;color:var(--amber700);letter-spacing:.14em}
+  .vol-head .en{font-size:12.5px;color:var(--ink3)}
+  .vol-sub{font-size:14px;color:var(--ink2);margin:0 0 26px;max-width:840px}
+
+  /* ---------- 卡片 ---------- */
+  .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+  .pat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 28px;display:flex;flex-direction:column}
+  .pat h3{font-size:19px;font-weight:500;margin:0 0 3px;letter-spacing:-.01em}
+  .pat h3 .en{font-size:11.5px;color:var(--ink3);font-weight:400;margin-left:9px;letter-spacing:0}
+  .pat .alias{font-size:13px;color:var(--amber800);font-weight:500;margin-bottom:14px}
+  .pat .essence{font-size:13.5px;color:var(--ink2);margin:0;line-height:1.85}
+  .pat .foot{margin-top:auto;padding-top:16px;border-top:1px dashed var(--line2);display:grid;gap:7px}
+  .pat .foot .row{font-size:12.5px;color:var(--ink2);display:flex;gap:10px;line-height:1.7}
+  .pat .foot .k{color:var(--ink3);flex:0 0 46px}
+  .pat .foot .row.warn .v{color:var(--red600)}
+  .pat.flat{background:#FCFBF7}
+
+  .badge{display:inline-block;font-size:11px;font-weight:500;letter-spacing:.06em;padding:3px 10px;border-radius:999px;margin-bottom:13px;align-self:flex-start}
+  .badge.create{background:var(--purple50);color:var(--purple800)}
+  .badge.struct{background:var(--teal50);color:var(--teal800)}
+  .badge.behave{background:var(--blue50);color:var(--blue800)}
+  .badge.arch{background:var(--coral50);color:var(--coral800)}
+
+  /* ---------- 迷你示意图 ---------- */
+  .fig{margin:20px 0 4px}
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+  .flow i{font-style:normal;color:var(--gray200);font-size:12px}
+  .n{font-size:12px;padding:5px 11px;border-radius:8px;border:1px solid;white-space:nowrap;line-height:1.5}
+  .n.blue{background:var(--blue50);border-color:var(--blue100);color:var(--blue800)}
+  .n.amber{background:var(--amber50);border-color:var(--amber200);color:var(--amber800)}
+  .n.teal{background:var(--teal50);border-color:var(--teal200);color:var(--teal800)}
+  .n.coral{background:var(--coral50);border-color:var(--coral200);color:var(--coral800)}
+  .n.purple{background:var(--purple50);border-color:var(--purple200);color:var(--purple800)}
+  .n.gray{background:var(--gray50);border-color:var(--gray200);color:var(--gray700)}
+  .n.dim{background:#FAFAF7;border-color:var(--line);color:#B4B2A9}
+  .fig .note{font-size:11.5px;color:var(--ink3);margin-top:10px}
+
+  .fan{display:flex;flex-direction:column;align-items:center}
+  .fan .src{font-size:12px;padding:6px 14px;border-radius:8px;background:var(--amber50);border:1px solid var(--amber200);color:var(--amber800);font-weight:500}
+  .fan .bar{width:1px;height:14px;background:var(--gray200)}
+  .fan .row{display:flex;flex-wrap:wrap;gap:7px;justify-content:center}
+
+  .nest{display:flex;flex-direction:column}
+  .nest .layer{border:1px dashed;border-radius:12px;padding:11px 12px 12px;font-size:11.5px}
+  .nest .layer .lb{display:block;margin-bottom:8px;font-weight:500}
+  .nest .l1{border-color:var(--purple200);background:var(--purple50);color:var(--purple800)}
+  .nest .l2{border-color:var(--blue100);background:var(--blue50);color:var(--blue800)}
+  .nest .l3{border-color:var(--amber200);background:var(--amber50);color:var(--amber800)}
+  .nest .core{border-radius:8px;background:#fff;border:1px solid var(--line2);padding:9px;text-align:center;font-size:12px;font-weight:500;color:var(--ink)}
+
+  .tree{display:flex;flex-direction:column;align-items:center;gap:0}
+  .tree .lvl{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .tree .bar{width:1px;height:12px;background:var(--gray200)}
+
+  /* ---------- 架构卡片 ---------- */
+  .arch{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 30px;margin-bottom:20px}
+  .arch-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  .arch-head h3{font-size:21px;font-weight:500;margin:0;letter-spacing:-.01em}
+  .arch-head .en{font-size:12.5px;color:var(--ink3)}
+  .arch .alias{font-size:13px;color:var(--coral800);font-weight:500;margin-bottom:16px}
+  .arch .body{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:start}
+  .arch p{font-size:13.5px;color:var(--ink2);margin:0 0 12px;line-height:1.85}
+  .arch p:last-child{margin-bottom:0}
+  .arch b{color:var(--ink);font-weight:500}
+  .arch figure{margin:0}
+  .arch svg{display:block;width:100%;height:auto}
+  .arch .verdict{margin-top:16px;padding:13px 16px;border-radius:10px;font-size:13px;line-height:1.7;background:var(--gray50);border-left:3px solid var(--gray600);color:var(--gray700)}
+  .arch .verdict.good{background:var(--teal50);border-left-color:var(--teal600);color:var(--teal800)}
+  .arch .verdict.bad{background:var(--coral50);border-left-color:var(--coral600);color:var(--coral800)}
+
+  /* ---------- 下卷分隔 ---------- */
+  .part{
+    margin:72px 0 44px;padding:30px 34px;border-radius:18px;
+    background:var(--amber50);border:1px solid var(--amber200)
+  }
+  .part .cn{font-size:12px;font-weight:500;color:var(--amber700);letter-spacing:.18em;margin-bottom:10px}
+  .part h2{font-size:28px;font-weight:500;margin:0 0 10px;letter-spacing:-.015em;color:var(--amber800)}
+  .part p{font-size:14px;color:var(--amber800);margin:0;max-width:820px;line-height:1.8}
+
+  .deep{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:32px 34px;margin-bottom:24px;scroll-margin-top:24px}
+  .deep-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  .deep-head h3{font-size:23px;font-weight:500;margin:0;letter-spacing:-.015em}
+  .deep-head .en{font-size:12.5px;color:var(--ink3)}
+  .deep .alias{font-size:13.5px;color:var(--amber800);font-weight:500;margin-bottom:20px}
+  .deep .split{display:grid;grid-template-columns:1.1fr .9fr;gap:38px;align-items:start}
+  .deep figure{margin:0}
+  .deep svg{display:block;width:100%;height:auto}
+  .deep figcaption{font-size:12.5px;color:var(--ink3);margin-top:14px;text-align:center}
+
+  ul.pts{margin:0;padding:0;list-style:none}
+  ul.pts li{position:relative;padding-left:22px;margin-bottom:15px;font-size:13.5px;color:var(--ink2);line-height:1.8}
+  ul.pts li::before{content:"";position:absolute;left:2px;top:10px;width:7px;height:7px;border-radius:2px;background:var(--amber600)}
+  ul.pts li b{color:var(--ink);font-weight:500}
+  ul.pts.two{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+
+  .battle{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 30px;font-size:14.5px;line-height:1.95;color:var(--ink2)}
+  .battle p{margin:0 0 16px}
+  .battle p:last-child{margin-bottom:0}
+  .battle b{color:var(--ink);font-weight:500}
+  .hl-blue{color:var(--blue800);font-weight:500}
+  .hl-amber{color:var(--amber800);font-weight:500}
+  .hl-teal{color:var(--teal800);font-weight:500}
+
+  .grid4{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  .law{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+  .law .lbl{font-size:12px;font-weight:500;color:var(--amber700);letter-spacing:.1em;margin-bottom:8px}
+  .law h4{font-size:15.5px;font-weight:500;margin:0 0 8px}
+  .law p{margin:0;font-size:13.5px;color:var(--ink2);line-height:1.75}
+
+  /* ---------- 表 ---------- */
+  .tbl-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;font-size:13px}
+  thead th{background:var(--gray50);font-weight:500;font-size:12.5px;color:var(--ink);text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);white-space:nowrap}
+  tbody td{padding:12px 16px;border-bottom:1px solid var(--line);color:var(--ink2);vertical-align:top;line-height:1.7}
+  tbody tr:last-child td{border-bottom:none}
+  tbody td:first-child{color:var(--ink);font-weight:500;white-space:nowrap}
+  tbody td code{background:var(--gray50);padding:2px 6px;border-radius:5px;color:var(--gray700);font-size:12px}
+  tbody tr.newrow td:first-child::after{content:"NEW";font-size:9.5px;color:var(--coral600);margin-left:7px;vertical-align:middle;font-weight:500;letter-spacing:.06em}
+
+  .mantra-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0 40px}
+  .mantra-grid .m{display:flex;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line);font-size:13.5px;line-height:1.7}
+  .mantra-grid .m .k{flex:0 0 78px;color:var(--ink);font-weight:500}
+  .mantra-grid .m .v{color:var(--ink2)}
+
+  footer{margin-top:72px;padding-top:28px;border-top:1px solid var(--line2);display:flex;justify-content:space-between;align-items:baseline;gap:24px;flex-wrap:wrap}
+  footer .fin{font-size:15px;color:var(--ink);font-weight:500;max-width:760px}
+  footer .meta{font-size:12.5px;color:var(--ink3)}
+
+  @media (max-width:920px){
+    .page{padding:40px 22px 64px}
+    h1{font-size:32px}
+    .grid2,.arch .body,.deep .split,.grid4,.toc-grid,.mantra-grid,ul.pts.two{grid-template-columns:1fr;gap:20px}
+    .part{padding:24px 22px}
+    .part h2{font-size:22px}
+  }
+  @media print{
+    body{background:#fff}
+    .page{padding:0;max-width:none}
+    .pat,.arch,table,.deep,.law,.toc,.battle{break-inside:avoid}
+    .toc{page-break-after:always}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="cover">
+  <div class="kicker">设计模式 · 架构模式 · 完整手册</div>
+  <h1>凡人修仙传 <em>· 设计模式全解</em></h1>
+  <p class="lede">20 个模式，一套修仙世界观。上卷全景速览，每个模式一张卡；下卷把责任链、策略、工厂三兄弟拆开精讲，配大图和实战串联。</p>
+  <div class="oneliner">模式不是用来背的，是用来在合适的场景里认出来的。先记住场景，代码自然会想起来。</div>
+  <div class="stats">
+    <span>20 个模式</span><span>4 个层次</span><span>1 套世界观</span><span>上卷速览 + 下卷精讲</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="toc-title">目 录</div>
+  <div class="toc-grid">
+    <div>
+      <div class="toc-h">上卷 · 全景速览</div>
+      <a href="#vol1">卷一 创世 · 创建型<span>工厂 / 抽象工厂 / 建造者 / 单例</span></a>
+      <a href="#vol2">卷二 铸体 · 结构型<span>适配器 / 装饰器 / 外观 / 代理 / 组合 / 桥接</span></a>
+      <a href="#vol3">卷三 运术 · 行为型<span>责任链 / 观察者 / 委托 / 策略 / 备忘录 / 迭代器</span></a>
+      <a href="#vol4">卷四 立道 · 架构型<span>MVC / MVP / MVVM / TCA</span></a>
+    </div>
+    <div>
+      <div class="toc-h">下卷 · 三大模式精讲</div>
+      <a href="#deep1">精讲一 责任链 · 拜山门<span>响应链全景图</span></a>
+      <a href="#deep2">精讲二 策略 · 临阵换功法<span>运行时替换</span></a>
+      <a href="#deep3">精讲三 工厂三兄弟<span>道统传承图 + 对比表</span></a>
+      <a href="#battle">实战串联 · 一场战斗<span>三个模式同时出场</span></a>
+      <a href="#laws">四条心法<span>最容易踩的坑</span></a>
+      <div class="toc-h" style="margin-top:20px">附录</div>
+      <a href="#cheat">全模式速查表<span>20 个模式一表打尽</span></a>
+      <a href="#mantra">心法总汇<span>20 条，复习只看这里</span></a>
+    </div>
+  </div>
+</nav>
+
+<!-- ==================== 上卷 ==================== -->
+
+<!-- ============ 卷一 ============ -->
+<section class="vol" id="vol1">
+  <div class="vol-head">
+    <span class="cn">卷 一</span>
+    <h2>创世</h2>
+    <span class="en">创建型模式 · 从无到有</span>
+  </div>
+  <p class="vol-sub">天地初开，万物未生。这一卷解决的都是同一件事：<b>东西怎么被造出来</b>。核心目标是把 <code>new</code> 收口到一处，让调用方不依赖具体类。</p>
+
+  <div class="grid2">
+
+    <article class="pat">
+      <span class="badge create">创建型</span>
+      <h3>工厂 <span class="en">Factory</span></h3>
+      <div class="alias">凡人修仙传 · 炼丹房</div>
+      <p class="essence">你把丹方名字往柜台一拍——"来三颗筑基丹"。炼丹师自去配药材、控火候、掐时辰。你只管拿丹，从不需要知道里面放了哪几味药。</p>
+      <div class="fig">
+        <div class="fan">
+          <div class="src">炼丹房（工厂）</div>
+          <div class="bar"></div>
+          <div class="row"><span class="n blue">筑基丹</span><span class="n blue">培元丹</span><span class="n blue">大还丹</span></div>
+        </div>
+        <div class="note">报名字 → 拿丹药，中间过程全部屏蔽</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v"><code>UIButton(type:)</code>、<code>UIFont.preferredFont(forTextStyle:)</code></span></div>
+        <div class="row warn"><span class="k">心法</span><span class="v">新增丹药品种，就得改炼丹师手里的方子本（那个 switch）</span></div>
+      </div>
+    </article>
+
+    <article class="pat">
+      <span class="badge create">创建型</span>
+      <h3>抽象工厂 <span class="en">Abstract Factory</span></h3>
+      <div class="alias">凡人修仙传 · 门派制式体系</div>
+      <p class="essence">拜入黄枫谷，领到的是一整套配套的东西：功法《青元剑诀》、制式飞剑、培元丹、道袍。全套同源，用起来不会互相打架——绝不会出现"练着正道功法却拿着魔器"这种自废修为的事。</p>
+      <div class="fig">
+        <div class="flow" style="margin-bottom:10px">
+          <span class="n teal">黄枫谷道统</span><i>→</i>
+          <span class="n teal">青元剑诀</span><span class="n teal">制式飞剑</span><span class="n teal">培元丹</span>
+        </div>
+        <div class="flow">
+          <span class="n purple">魔道道统</span><i>→</i>
+          <span class="n purple">魔功</span><span class="n purple">魔器</span><span class="n purple">魔丹</span>
+        </div>
+        <div class="note">一个道统 = 一整套配套产品，混搭会走火入魔</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v"><code>NSPersistentContainer</code>、主题系统（浅色/深色整套切换）</span></div>
+        <div class="row warn"><span class="k">心法</span><span class="v">新增"产品种类"要改所有道统，代价最大</span></div>
+      </div>
+    </article>
+
+    <article class="pat">
+      <span class="badge create">创建型</span>
+      <h3>建造者 <span class="en">Builder</span></h3>
+      <div class="alias">凡人修仙传 · 炼制本命法宝</div>
+      <p class="essence">选材 → 塑形 → 刻阵 → 淬火 → 认主。五步一步不能少，顺序错了整件法宝就废了。同一个流程，换个材料就能炼出完全不同的东西——但步骤永远一样。</p>
+      <div class="fig">
+        <div class="flow">
+          <span class="n amber">选材</span><i>→</i>
+          <span class="n amber">塑形</span><i>→</i>
+          <span class="n amber">刻阵</span><i>→</i>
+          <span class="n amber">淬火</span><i>→</i>
+          <span class="n amber">认主</span>
+        </div>
+        <div class="note">复杂对象的构建过程被拆成有序步骤，最后一步才交付成品</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v"><code>URLComponents</code>、<code>UIAlertController</code> 的链式配置</span></div>
+        <div class="row"><span class="k">心法</span><span class="v">建造者管"怎么一步步造"，工厂管"造哪一个"</span></div>
+      </div>
+    </article>
+
+    <article class="pat">
+      <span class="badge create">创建型</span>
+      <h3>单例 <span class="en">Singleton</span></h3>
+      <div class="alias">凡人修仙传 · 掌天瓶</div>
+      <p class="essence">天地间<b>仅此一只</b>。不管是谁拿到、在哪个界面用、什么时辰催动，世上就这一只瓶，催出来的灵药也进的是同一处空间。你想用，不用自己造一个，直接去找它就行。</p>
+      <div class="fig">
+        <div class="fan">
+          <div class="src">掌天瓶（唯一实例）</div>
+          <div class="bar"></div>
+          <div class="row">
+            <span class="n gray">韩立</span>
+            <span class="n gray">南宫婉</span>
+            <span class="n gray">任何想催药的人</span>
+          </div>
+        </div>
+        <div class="note">拿到的永远是同一只瓶 —— 全局唯一，全局可访问</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v"><code>UIApplication.shared</code>、<code>URLSession.shared</code>、<code>FileManager.default</code>、<code>UserDefaults.standard</code></span></div>
+        <div class="row warn"><span class="k">心法</span><span class="v">单例就是全局状态，测试和多线程都要留神；Swift 用 <code>static let shared</code> 天然线程安全</span></div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ============ 卷二 ============ -->
+<section class="vol" id="vol2">
+  <div class="vol-head">
+    <span class="cn">卷 二</span>
+    <h2>铸体</h2>
+    <span class="en">结构型模式 · 塑造形体</span>
+  </div>
+  <p class="vol-sub">有了材料，接下来是<b>怎么把东西组装得更好用</b>。这一卷关心对象之间的组合关系：如何在不改原物的前提下，让它适应新环境、承担新职责、或者被安全地保护起来。</p>
+
+  <div class="grid2">
+
+    <article class="pat">
+      <span class="badge struct">结构型</span>
+      <h3>适配器 <span class="en">Adapter</span></h3>
+      <div class="alias">凡人修仙传 · 灵石兑换阵</div>
+      <p class="essence">天南按"下品灵石"计数，乱星海按"中品灵石"计价。两边标准不同，没法直接交易。中间架一道兑换阵，进来的是天南灵石，出去的是乱星海认的数目——<b>两边都不用改自己的规矩</b>。</p>
+      <div class="fig">
+        <div class="flow">
+          <span class="n gray">天南灵石</span><i>→</i>
+          <span class="n amber">兑换阵</span><i>→</i>
+          <span class="n teal">乱星海计价</span>
+        </div>
+        <div class="note">适配器只翻译接口，不改变任何一方的行为</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v">把第三方 SDK 包成自家协议、<code>AnyView</code> 类型擦除</span></div>
+        <div class="row"><span class="k">心法</span><span class="v">只做接口转换；一旦开始"顺便改逻辑"，它就不是适配器了</span></div>
+      </div>
+    </article>
+
+    <article class="pat">
+      <span class="badge struct">结构型</span>
+      <h3>装饰器 <span class="en">Decorator</span></h3>
+      <div class="alias">凡人修仙传 · 给法宝叠加禁制</div>
+      <p class="essence">一柄飞剑本体不变。加一道锐金禁制，更锋利；再叠一道破甲禁制，能破防；再叠一道元磁禁制，能扰敌神识。<b>剑还是那柄剑</b>，但每加一层能力就多一重，而且随时可以拆掉。</p>
+      <div class="fig">
+        <div class="nest">
+          <div class="layer l1"><span class="lb">① 元磁禁制（最外层）</span>
+            <div class="layer l2"><span class="lb">② 破甲禁制</span>
+              <div class="layer l3"><span class="lb">③ 锐金禁制</span>
+                <div class="core">飞剑本体</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="note">层层包裹，每层和被包对象实现同一接口，所以能无限套娃</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v">给 View 叠圆角+阴影+边框、<code>URLProtocol</code>、Combine 的 operator 链</span></div>
+        <div class="row"><span class="k">心法</span><span class="v">装饰器必须和被装饰对象同接口，否则套不上</span></div>
+      </div>
+    </article>
+
+    <article class="pat">
+      <span class="badge struct">结构型</span>
+      <h3>外观 <span class="en">Facade</span></h3>
+      <div class="alias">凡人修仙传 · 万宝楼</div>
+      <p class="essence">买法宝、买丹药、卖材料、打听消息、参加拍卖——全去万宝楼一个地方。楼里有多少鉴定师、多少掌柜在跑腿、货从哪个库房调，你一概不用知道。<b>一个门面，把里头的复杂全挡在外面。</b></p>
+      <div class="fig">
+        <div class="fan">
+          <div class="src" style="background:var(--teal50);border-color:var(--teal200);color:var(--teal800)">万宝楼（门面）</div>
+          <div class="bar"></div>
+          <div class="row"><span class="n gray">鉴定</span><span class="n gray">拍卖</span><span class="n gray">库房</span><span class="n gray">账房</span></div>
+        </div>
+        <div class="note">对外一个入口，对内一堆子系统</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v"><code>UIImagePickerController</code>、SDWebImage 的高层 API、<code>FileManager</code></span></div>
+        <div class="row"><span class="k">心法</span><span class="v">外观只是给条捷径，不禁止你直接访问子系统</span></div>
+      </div>
+    </article>
+
+    <article class="pat">
+      <span class="badge struct">结构型</span>
+      <h3>代理 <span class="en">Proxy</span></h3>
+      <div class="alias">凡人修仙传 · 傀儡</div>
+      <p class="essence">韩立炼一具傀儡坐镇洞府，自己跑去闭关。外人来拜访，见到的是傀儡——它可以替你挡人、替你传话，也可以<b>直接不让你见到本体</b>。真实对象根本没出场，但事情照样办。</p>
+      <div class="fig">
+        <div class="flow">
+          <span class="n gray">访客</span><i>→</i>
+          <span class="n coral">傀儡</span><i>→</i>
+          <span class="n teal">韩立本体</span>
+        </div>
+        <div class="note">傀儡与本体同接口，访客分不出真假；访问控制、延迟加载都在傀儡这层做</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v">懒加载、<code>NSProxy</code>、<code>URLSession</code> 的远程代理</span></div>
+        <div class="row"><span class="k">心法</span><span class="v">代理和真实对象同接口；代理加逻辑，适配器不加逻辑</span></div>
+      </div>
+    </article>
+
+    <article class="pat">
+      <span class="badge struct">结构型</span>
+      <h3>组合 <span class="en">Composite</span></h3>
+      <div class="alias">凡人修仙传 · 阵法套阵</div>
+      <p class="essence">一座护山大阵，由四座子阵拼成；每座子阵，又由若干阵眼拼成。韩立要启动它，只需掐一个诀——<b>大阵自己会递归把底下所有子阵、所有阵眼逐个点燃</b>。对他来说，启动一座大阵和启动一个阵眼，是同一个动作。</p>
+      <div class="fig">
+        <div class="tree">
+          <span class="n amber">护山大阵（容器）</span>
+          <span class="bar"></span>
+          <div class="lvl">
+            <span class="n teal">子阵·东</span>
+            <span class="n teal">子阵·南</span>
+            <span class="n teal">子阵·西</span>
+          </div>
+          <span class="bar"></span>
+          <div class="lvl">
+            <span class="n gray">阵眼</span><span class="n gray">阵眼</span>
+            <span class="n gray">阵眼</span><span class="n gray">阵眼</span>
+          </div>
+        </div>
+        <div class="note">树形结构：单个阵眼与整座大阵被一视同仁，上层不用写 if-else 区分</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v"><code>UIView</code> 层级、<code>CALayer</code> 树、SwiftUI 的 <code>ViewBuilder</code></span></div>
+        <div class="row warn"><span class="k">心法</span><span class="v">叶子与容器必须实现同一接口，否则组合的意义就没了</span></div>
+      </div>
+    </article>
+
+    <article class="pat">
+      <span class="badge struct">结构型</span>
+      <h3>桥接 <span class="en">Bridge</span></h3>
+      <div class="alias">凡人修仙传 · 法宝形态 × 催动法诀</div>
+      <p class="essence">法宝有形态之分：飞剑、飞刀、宝塔。催动它又有法诀之分：火系、雷系、风系。<b>两个维度各自演化</b>——飞剑配火诀是烈焰剑，宝塔配雷诀是雷塔。不用写"火飞剑/雷飞剑/风飞剑/火宝塔…"这一串，只需 3 + 3 个零件自由拼装。</p>
+      <div class="fig">
+        <div class="flow" style="margin-bottom:10px">
+          <span class="n coral">形态维度</span><i>→</i>
+          <span class="n coral">飞剑</span><span class="n coral">飞刀</span><span class="n coral">宝塔</span>
+        </div>
+        <div class="flow">
+          <span class="n blue">法诀维度</span><i>→</i>
+          <span class="n blue">火系</span><span class="n blue">雷系</span><span class="n blue">风系</span>
+        </div>
+        <div class="note">3 × 3 的组合爆炸，被拆成 3 + 3 的两条独立继承线</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v">协议 + 多个实现自由组合（如 <code>ImageLoader</code> × <code>CachePolicy</code>）、SwiftUI 的 View 与 Style 分离</span></div>
+        <div class="row warn"><span class="k">心法</span><span class="v">只有"两个维度都会独立变化"时才用；单一维度用继承或策略就够了</span></div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ============ 卷三 ============ -->
+<section class="vol" id="vol3">
+  <div class="vol-head">
+    <span class="cn">卷 三</span>
+    <h2>运术</h2>
+    <span class="en">行为型模式 · 运用神通</span>
+  </div>
+  <p class="vol-sub">形已铸成，接下来是<b>怎么运转</b>。这一卷关心对象之间如何通信、如何分配职责、如何在合适的时机把该做的事交给该做的人。</p>
+
+  <div class="grid2">
+
+    <article class="pat">
+      <span class="badge behave">行为型</span>
+      <h3>责任链 <span class="en">Chain of Responsibility</span></h3>
+      <div class="alias">凡人修仙传 · 拜山门通报</div>
+      <p class="essence">一纸战书递进宗门：山门守卫 → 外门执事 → 执法长老 → 掌门。逐关上递，<b>哪一关接下，后面的关这辈子都收不到</b>。每个关口手里都攥着一根通向上一级的绳子。</p>
+      <div class="fig">
+        <div class="flow">
+          <span class="n blue">山门守卫</span><i>→</i>
+          <span class="n blue">外门执事</span><i>→</i>
+          <span class="n amber">执法长老</span><i>→</i>
+          <span class="n dim">掌门</span>
+        </div>
+        <div class="note">金色那一关接下，右侧的掌门不再触发</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v"><code>UIResponder</code> 响应链、<code>hitTest</code> 命中测试</span></div>
+        <div class="row warn"><span class="k">心法</span><span class="v">链必须有尽头，否则事件静默丢失、不报错</span></div>
+      </div>
+    </article>
+
+    <article class="pat">
+      <span class="badge behave">行为型</span>
+      <h3>观察者 <span class="en">Observer</span></h3>
+      <div class="alias">凡人修仙传 · 传讯符</div>
+      <p class="essence">宗门大殿贴一张传讯符，所有结丹期长老的神识都挂在上面。钟声一响，<b>全部同时收到消息</b>；至于谁去、谁不去，是他们各自的判断，发消息的人一个都不用管。</p>
+      <div class="fig">
+        <div class="fan">
+          <div class="src">传讯符（被观察者）</div>
+          <div class="bar"></div>
+          <div class="row"><span class="n blue">长老甲</span><span class="n blue">长老乙</span><span class="n blue">长老丙</span><span class="n blue">长老丁</span></div>
+        </div>
+        <div class="note">一对多：一个变化，所有订阅者自动收到通知</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v"><code>NotificationCenter</code>、KVO、Combine 的 <code>Publisher</code>、<code>@Published</code></span></div>
+        <div class="row warn"><span class="k">心法</span><span class="v">订阅了就要在 deinit 里取消，否则内存泄漏或野指针</span></div>
+      </div>
+    </article>
+
+    <article class="pat">
+      <span class="badge behave">行为型</span>
+      <h3>委托 <span class="en">Delegate</span></h3>
+      <div class="alias">凡人修仙传 · 托付与指派</div>
+      <p class="essence">韩立要远赴乱星海，把洞府托付给银月：<b>"遇到元婴期修士来犯，传讯给我；其余你自己看着办。"</b>——遇到什么事、由谁决定、决定完怎么回话，事先用一纸约定说清楚。</p>
+      <div class="fig">
+        <div class="flow">
+          <span class="n gray">韩立（委托方）</span><i>⇄</i>
+          <span class="n coral">银月（被委托方）</span>
+        </div>
+        <div class="note">一对一：委托方定义"协议"，被委托方实现"具体怎么做"</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v"><code>UITableViewDelegate</code> / <code>DataSource</code>、<code>UITextFieldDelegate</code></span></div>
+        <div class="row warn"><span class="k">心法</span><span class="v">delegate 属性必须 weak，否则委托方与被委托方互相持有</span></div>
+      </div>
+    </article>
+
+    <article class="pat">
+      <span class="badge behave">行为型</span>
+      <h3>策略 <span class="en">Strategy</span></h3>
+      <div class="alias">凡人修仙传 · 临阵换功法</div>
+      <p class="essence">韩立身上带着大衍决、天雷竹、青竹蜂云剑、元磁神光。对上不同敌人换不同手段——<b>人还是那个人，换的只是这一战用哪门功</b>。而且可以打到一半临时改主意。</p>
+      <div class="fig">
+        <div class="fan">
+          <div class="src" style="background:var(--blue50);border-color:var(--blue100);color:var(--blue800)">韩立（Context）</div>
+          <div class="bar"></div>
+          <div class="row"><span class="n amber">大衍决</span><span class="n amber">天雷竹</span><span class="n amber">蜂云剑</span><span class="n amber">元磁神光</span></div>
+        </div>
+        <div class="note">换功法不用换人：运行时替换，无需重建 Context</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v"><code>JSONDecoder.keyDecodingStrategy</code>、<code>sorted(by:)</code></span></div>
+        <div class="row warn"><span class="k">心法</span><span class="v">策略要无状态，别反过来持有 Context</span></div>
+      </div>
+    </article>
+
+    <article class="pat">
+      <span class="badge behave">行为型</span>
+      <h3>备忘录 <span class="en">Memento</span></h3>
+      <div class="alias">凡人修仙传 · 留影玉简</div>
+      <p class="essence">韩立每次闭关前，把当前修为、功法状态、体内灵力刻进一枚玉简。万一走火入魔，取出玉简一对照，<b>可以把状态往回拨</b>。玉简本身什么都不会做，它只管"存"。</p>
+      <div class="fig">
+        <div class="flow">
+          <span class="n teal">韩立（原发器）</span><i>→</i>
+          <span class="n purple">留影玉简（备忘录）</span>
+        </div>
+        <div class="flow" style="margin-top:8px">
+          <span class="n dim">何时回溯由持有者决定</span><i>←</i>
+          <span class="n purple">取回状态</span>
+        </div>
+        <div class="note">备忘录只负责保存快照，恢复的时机由外部（管理者）决定</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v">状态恢复、<code>UndoManager</code> 撤销栈、<code>Codable</code> 快照</span></div>
+        <div class="row"><span class="k">心法</span><span class="v">快照要不可变；存了不恢复，等于白存</span></div>
+      </div>
+    </article>
+
+    <article class="pat">
+      <span class="badge behave">行为型</span>
+      <h3>迭代器 <span class="en">Iterator</span></h3>
+      <div class="alias">凡人修仙传 · 神识扫视</div>
+      <p class="essence">不管面前是散落的灵石、排成阵的阵旗、还是密密麻麻一群妖兽，韩立的神识都只做同一个动作——<b>"下一个"</b>。里面怎么摆、分几层、有几万个，他一概不必知道。</p>
+      <div class="fig">
+        <div class="flow">
+          <span class="n teal">各种聚合</span><i>→</i>
+          <span class="n blue">统一"下一个"</span><i>→</i>
+          <span class="n gray">逐个访问</span>
+        </div>
+        <div class="note">屏蔽内部表示：遍历方式与聚合结构解耦</div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">iOS</span><span class="v"><code>IteratorProtocol</code> / <code>Sequence</code>、<code>for...in</code>、<code>AnyIterator</code>、<code>enumerated()</code></span></div>
+        <div class="row warn"><span class="k">心法</span><span class="v">Swift 里实现 <code>Sequence</code>，就白拿 <code>map/filter/reduce</code> 一整套能力</span></div>
+      </div>
+    </article>
+
+    <article class="pat flat">
+      <span class="badge behave">对比</span>
+      <h3>三个"分派"别混</h3>
+      <div class="alias">一句话分清</div>
+      <p class="essence" style="margin-bottom:14px"><b>责任链</b>：一个请求，多个候选，逐个传递（串联）。<br><b>观察者</b>：一个变化，多个接收，全部通知（广播）。<br><b>策略</b>：一个调用，多个算法，只选一个（并联）。</p>
+      <div class="fig">
+        <div class="flow" style="flex-direction:column;align-items:flex-start;gap:8px">
+          <span class="n gray">逐个试 → 责任链</span>
+          <span class="n gray">全都发 → 观察者</span>
+          <span class="n gray">挑一个 → 策略</span>
+        </div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">记忆点</span><span class="v">串联 / 广播 / 并联</span></div>
+      </div>
+    </article>
+
+    <article class="pat flat">
+      <span class="badge struct">对比</span>
+      <h3>结构型四兄弟别混</h3>
+      <div class="alias">一句话分清</div>
+      <p class="essence" style="margin-bottom:14px"><b>适配器</b>：接口不对，翻译一下（改接口）。<br><b>装饰器</b>：能力不够，套一层（加职责）。<br><b>代理</b>：访问要控，找个替身（控访问）。<br><b>外观</b>：入口太杂，开个门面（简化）。</p>
+      <div class="fig">
+        <div class="flow" style="flex-direction:column;align-items:flex-start;gap:8px">
+          <span class="n gray">改接口 → 适配器</span>
+          <span class="n gray">加职责 → 装饰器</span>
+          <span class="n gray">控访问 → 代理</span>
+          <span class="n gray">简化入口 → 外观</span>
+        </div>
+      </div>
+      <div class="foot">
+        <div class="row"><span class="k">记忆点</span><span class="v">四个都"包一层"，但目的完全不同</span></div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ============ 卷四 ============ -->
+<section class="vol" id="vol4">
+  <div class="vol-head">
+    <span class="cn">卷 四</span>
+    <h2>立道</h2>
+    <span class="en">架构模式 · 建立道统</span>
+  </div>
+  <p class="vol-sub">前面三卷讲的是"零件"，这一卷讲的是<b>整座宗门的制度</b>。MVC / MVP / MVVM / TCA 回答的是同一个问题：界面、逻辑、数据这三方，谁跟谁说话、谁有权改状态。它们的演进史，就是一部"把职责越切越清"的历史。</p>
+
+  <article class="arch">
+    <div class="arch-head"><h3>MVC</h3><span class="en">Model · View · Controller</span></div>
+    <div class="alias">凡人修仙传 · 掌门 + 弟子 + 藏经阁</div>
+    <div class="body">
+      <div>
+        <p><b>掌门（Controller）</b>什么都管：调度弟子、决定今天练什么、还要亲自去藏经阁翻书。<b>弟子（View）</b>负责把宗门的样子展现出来，<b>藏经阁（Model）</b>负责存东西。</p>
+        <p>问题出在两点。一是掌门太累——所有事都往他身上堆，最后变成一座走不动的巨石（这就是 iOS 圈著名的 <b>Massive View Controller</b>）。二是弟子经常绕过掌门，自己跑去藏经阁翻书（View 直接读 Model），出了事没人知道是谁改的。</p>
+        <p>它是最朴素的架构，Apple 原生就是这套。小页面用起来飞快，页面一复杂就开始失控。</p>
+      </div>
+      <figure>
+        <svg viewBox="0 0 680 226" role="img" xmlns="http://www.w3.org/2000/svg">
+          <title>MVC 结构</title>
+          <desc>Controller 同时连接 Model 与 View，View 与 Model 之间存在未经 Controller 的直接访问</desc>
+          <defs>
+            <marker id="arrowMVC" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+          </defs>
+          <rect x="80" y="40" width="180" height="56" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+          <text x="170" y="62" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#085041">Model 藏经阁</text>
+          <text x="170" y="80" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#0F6E56">数据与业务规则</text>
+
+          <rect x="420" y="40" width="180" height="56" rx="8" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+          <text x="510" y="62" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#0C447C">View 弟子</text>
+          <text x="510" y="80" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#185FA5">界面呈现</text>
+
+          <rect x="250" y="150" width="180" height="56" rx="8" fill="#FAEEDA" stroke="#EF9F27" stroke-width="0.5"/>
+          <text x="340" y="172" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#854F0B">Controller 掌门</text>
+          <text x="340" y="190" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#BA7517">什么都管，最累</text>
+
+          <path d="M290 150 L215 100" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowMVC)"/>
+          <path d="M390 150 L465 100" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowMVC)"/>
+
+          <path d="M420 68 L266 68" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowMVC)"/>
+          <text x="343" y="58" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#993C1D">偷偷私通，绕过掌门</text>
+        </svg>
+      </figure>
+    </div>
+    <div class="verdict bad">致命伤：View 与 Model 之间那条虚线。它让"谁改了数据"变得不可追踪，也让 Controller 无限膨胀。</div>
+  </article>
+
+  <article class="arch">
+    <div class="arch-head"><h3>MVP</h3><span class="en">Model · View · Presenter</span></div>
+    <div class="alias">凡人修仙传 · 长老 + 传令弟子 + 藏经阁</div>
+    <div class="body">
+      <div>
+        <p>换了个制度：<b>长老（Presenter）</b>掌握所有推演与决策，<b>传令弟子（View）</b>只干两件事——把长老的指令摆出来给人看，把外面发生的事回报给长老。<b>藏经阁（Model）</b>还是只负责存。</p>
+        <p>关键改动是：<b>弟子和藏经阁再也不见面了</b>。所有往来必须经过长老。弟子只暴露一个抽象接口（"你能显示什么、能回报什么"），长老不关心对面站的是真人弟子还是一具木偶。</p>
+        <p>好处立竿见影：想测试长老的决策对不对，随便塞一个假弟子进去就行，不需要真的搭一套界面。这就是它比 MVC 好测的原因。</p>
+      </div>
+      <figure>
+        <svg viewBox="0 0 680 190" role="img" xmlns="http://www.w3.org/2000/svg">
+          <title>MVP 结构</title>
+          <desc>View 与 Presenter 双向通信，Presenter 与 Model 双向通信，View 与 Model 之间没有连接</desc>
+          <defs>
+            <marker id="arrowMVP" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+          </defs>
+          <rect x="40" y="40" width="160" height="56" rx="8" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+          <text x="120" y="62" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#0C447C">View 传令弟子</text>
+          <text x="120" y="80" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#185FA5">只展示、只回报</text>
+
+          <rect x="260" y="40" width="160" height="56" rx="8" fill="#FAEEDA" stroke="#EF9F27" stroke-width="0.5"/>
+          <text x="340" y="62" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#854F0B">Presenter 长老</text>
+          <text x="340" y="80" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#BA7517">掌握全部推演</text>
+
+          <rect x="480" y="40" width="160" height="56" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+          <text x="560" y="62" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#085041">Model 藏经阁</text>
+          <text x="560" y="80" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#0F6E56">只存数据</text>
+
+          <path d="M200 60 L254 60" fill="none" stroke="#888780" stroke-width="1.5" marker-start="url(#arrowMVP)" marker-end="url(#arrowMVP)"/>
+          <path d="M420 60 L474 60" fill="none" stroke="#888780" stroke-width="1.5" marker-start="url(#arrowMVP)" marker-end="url(#arrowMVP)"/>
+
+          <path d="M120 96 L120 130 L560 130 L560 102" fill="none" stroke="#D3D1C7" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="340" y="152" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#888780">View 与 Model 之间永不相连 —— 全靠长老牵线</text>
+        </svg>
+      </figure>
+    </div>
+    <div class="verdict good">收益：界面彻底可替换、逻辑彻底可单测。代价：Presenter 自己要手写一大堆"把状态翻译成显示文本"的胶水代码。</div>
+  </article>
+
+  <article class="arch">
+    <div class="arch-head"><h3>MVVM</h3><span class="en">Model · View · ViewModel</span></div>
+    <div class="alias">凡人修仙传 · 韩立 + 傀儡 + 情报</div>
+    <div class="body">
+      <div>
+        <p><b>韩立（ViewModel）</b>处理一切推演：敌人什么修为、该用什么手段、要不要跑。<b>傀儡（View）</b>只负责照着摆姿势——韩立让它抬手它就抬手，完全不懂为什么。</p>
+        <p>最妙的一处是：韩立的神识和傀儡是<b>连通的（双向绑定）</b>。韩立心里一变，傀儡立刻跟着动，不需要谁在中间喊一嗓子传话。这就是 MVVM 和 MVP 最大的差别——<b>Presenter 要手动去更新 View，ViewModel 是自动同步的</b>。</p>
+        <p>所以傀儡可以随便换：换一具新的傀儡（换一套 UI），韩立的推演逻辑一行都不用改。</p>
+      </div>
+      <figure>
+        <svg viewBox="0 0 680 190" role="img" xmlns="http://www.w3.org/2000/svg">
+          <title>MVVM 结构</title>
+          <desc>View 与 ViewModel 之间是自动绑定，ViewModel 持有并操作 Model</desc>
+          <defs>
+            <marker id="arrowMVVM" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+          </defs>
+          <rect x="40" y="40" width="160" height="56" rx="8" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+          <text x="120" y="62" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#0C447C">View 傀儡</text>
+          <text x="120" y="80" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#185FA5">只管照做，不懂战术</text>
+
+          <rect x="260" y="40" width="160" height="56" rx="8" fill="#FAEEDA" stroke="#EF9F27" stroke-width="0.5"/>
+          <text x="340" y="62" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#854F0B">ViewModel 韩立</text>
+          <text x="340" y="80" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#BA7517">全部推演与状态</text>
+
+          <rect x="480" y="40" width="160" height="56" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+          <text x="560" y="62" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#085041">Model 情报</text>
+          <text x="560" y="80" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#0F6E56">数据与规则</text>
+
+          <path d="M200 60 L254 60" fill="none" stroke="#1D9E75" stroke-width="2" marker-start="url(#arrowMVVM)" marker-end="url(#arrowMVVM)"/>
+          <text x="227" y="46" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#0F6E56">双向绑定</text>
+
+          <path d="M420 60 L474 60" fill="none" stroke="#888780" stroke-width="1.5" marker-start="url(#arrowMVVM)" marker-end="url(#arrowMVVM)"/>
+
+          <text x="340" y="140" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#888780">状态一变，界面自动跟着变 —— 不用谁手动去同步</text>
+        </svg>
+      </figure>
+    </div>
+    <div class="verdict good">SwiftUI 天生就是 MVVM：<code>@Published</code> 一改，依赖它的 View 自动重绘。这是目前 iOS 新项目最主流的选择。</div>
+  </article>
+
+  <article class="arch">
+    <div class="arch-head"><h3>TCA</h3><span class="en">The Composable Architecture</span></div>
+    <div class="alias">凡人修仙传 · 宗门朝议制度</div>
+    <div class="body">
+      <div>
+        <p>前面三个制度都有一个共同的隐患：<b>状态可以被到处改</b>。TCA 直接立了一条铁律——<b>只有朝议能改状态，谁都不许私自动手</b>。</p>
+        <p><b>State（宗门状态）</b>：灵石多少、弟子几人、领地几何。<br>
+        <b>Action（折子）</b>：任何人想改，必须写折子递上来，写明"我要做什么"。<br>
+        <b>Reducer（朝议）</b>：一个纯函数——看当前状态 + 折子，算出新状态。不联网、不写盘，所以极易测试。<br>
+        <b>Store（议事大殿）</b>：保存着状态和全部流程，是唯一入口。<br>
+        <b>Effect（外派任务）</b>：朝议上决定"派弟子去探查敌情"，这活儿是异步的，结果回来后，再递一份折子进来。</p>
+        <p>于是整个宗门变成了一个闭环：<b>状态 → 界面 → 折子 → 朝议 → 新状态</b>。任何时候出问题，只要看折子记录，就知道是谁、在什么时候、改了什么。</p>
+      </div>
+      <figure>
+        <svg viewBox="0 0 680 224" role="img" xmlns="http://www.w3.org/2000/svg">
+          <title>TCA 单向数据流</title>
+          <desc>状态驱动界面，界面产生动作，动作经 reducer 计算出新状态，形成闭环</desc>
+          <defs>
+            <marker id="arrowTCA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </marker>
+          </defs>
+
+          <rect x="30" y="50" width="140" height="56" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+          <text x="100" y="72" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#085041">State</text>
+          <text x="100" y="89" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="11.5" fill="#0F6E56">宗门状态</text>
+
+          <rect x="190" y="50" width="140" height="56" rx="8" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+          <text x="260" y="72" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#0C447C">View</text>
+          <text x="260" y="89" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="11.5" fill="#185FA5">界面</text>
+
+          <rect x="350" y="50" width="140" height="56" rx="8" fill="#FAEEDA" stroke="#EF9F27" stroke-width="0.5"/>
+          <text x="420" y="72" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#854F0B">Action</text>
+          <text x="420" y="89" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="11.5" fill="#BA7517">折子</text>
+
+          <rect x="510" y="50" width="140" height="56" rx="8" fill="#EEEDFE" stroke="#7F77DD" stroke-width="0.5"/>
+          <text x="580" y="72" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#3C3489">Reducer</text>
+          <text x="580" y="89" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="11.5" fill="#534AB7">纯函数朝议</text>
+
+          <path d="M170 78 L184 78" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowTCA)"/>
+          <path d="M330 78 L344 78" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowTCA)"/>
+          <path d="M490 78 L504 78" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowTCA)"/>
+
+          <path d="M580 106 L580 150 L100 150 L100 112" fill="none" stroke="#1D9E75" stroke-width="1.5" marker-end="url(#arrowTCA)"/>
+          <text x="340" y="166" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#0F6E56">只有朝议能改状态，改完再驱动界面 —— 单向闭环</text>
+
+          <rect x="30" y="182" width="620" height="26" rx="8" fill="#F1EFE8" stroke="#D3D1C7" stroke-width="0.5" stroke-dasharray="4 3"/>
+          <text x="340" y="195" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="11.5" fill="#5F5E5A">Effect 外派任务：异步结果回来后，再递一份折子进朝议</text>
+        </svg>
+      </figure>
+    </div>
+    <div class="verdict">适合中大型项目、需要极致可测试性和状态可追溯性的场景。代价是样板代码多、上手曲线陡——小项目上它就是杀鸡用牛刀。</div>
+  </article>
+
+</section>
+
+<!-- ==================== 下卷 ==================== -->
+<div class="part" id="deep">
+  <div class="cn">下 卷</div>
+  <h2>三大模式精讲</h2>
+  <p>上卷是速览，每个模式只有一张卡。下卷把最常用、也最容易写错的三组拆开讲透：<b>责任链</b>、<b>策略</b>、<b>工厂三兄弟</b>。每一讲都配全景图、iOS 真实落点和心法，最后用一场"立即支付"把它们串起来。</p>
+</div>
+
+<!-- 精讲一 -->
+<section class="deep" id="deep1">
+  <div class="deep-head"><h3>责任链 · 拜山门</h3><span class="en">Chain of Responsibility</span></div>
+  <div class="alias">一纸战书从山门一路递到太上长老，哪一关接下，后面的关就再也收不到</div>
+  <div class="split">
+    <figure>
+      <svg viewBox="0 0 680 476" role="img" xmlns="http://www.w3.org/2000/svg">
+        <title>责任链即山门关卡链</title>
+        <desc>战书沿宗门关卡逐级上递，某一关接下后链条终止，后续关卡不再触发</desc>
+        <defs>
+          <marker id="arrowA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <text x="40" y="26" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#5F5E5A">战书自凡界来，逐关上递</text>
+
+        <rect x="200" y="40" width="280" height="56" rx="8" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+        <text x="340" y="62" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#0C447C">第一关 · 山门守卫</text>
+        <text x="340" y="80" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#185FA5">不问来意，放行</text>
+        <text x="500" y="68" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#185FA5">放行</text>
+
+        <path d="M340 96 L340 124" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowA)"/>
+
+        <rect x="200" y="130" width="280" height="56" rx="8" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+        <text x="340" y="152" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#0C447C">第二关 · 外门执事</text>
+        <text x="340" y="170" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#185FA5">品级不够，放行</text>
+        <text x="500" y="158" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#185FA5">放行</text>
+
+        <path d="M340 186 L340 214" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowA)"/>
+
+        <rect x="200" y="220" width="280" height="56" rx="8" fill="#FAEEDA" stroke="#EF9F27" stroke-width="0.5"/>
+        <text x="340" y="242" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#854F0B">第三关 · 内门长老</text>
+        <text x="340" y="260" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#BA7517">此事归我，接下战书！</text>
+        <text x="500" y="248" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#BA7517">链条就此截断</text>
+
+        <path d="M340 276 L340 304" fill="none" stroke="#D3D1C7" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowA)"/>
+
+        <rect x="200" y="310" width="280" height="56" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="4 3"/>
+        <text x="340" y="332" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" fill="#888780">第四关 · 掌门</text>
+        <text x="340" y="350" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#B4B2A9">从未收到战书</text>
+        <text x="500" y="338" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#B4B2A9">永不触发</text>
+
+        <path d="M340 366 L340 394" fill="none" stroke="#D3D1C7" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowA)"/>
+
+        <rect x="200" y="400" width="280" height="56" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="4 3"/>
+        <text x="340" y="422" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" fill="#888780">第五关 · 太上长老</text>
+        <text x="340" y="440" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#B4B2A9">闭死关中，从未收到</text>
+        <text x="500" y="428" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#B4B2A9">永不触发</text>
+      </svg>
+      <figcaption>战书在第三关被接下，掌门与太上长老从此不再触发</figcaption>
+    </figure>
+
+    <div>
+      <ul class="pts">
+        <li><b>链就是 next 绳。</b>UIKit 内部把视图 → 控制器 → 窗口 → Application → AppDelegate 串成一条链。</li>
+        <li><b>截断 = 不调 super。</b>某个视图重写了 <code>touchesBegan</code> 又不调 <code>super</code>，事件就到此为止——比如你给 View 加了 tap 手势后，控制器收不到这个事件。</li>
+        <li><b>链头由点名决定。</b><code>hitTest</code> 从根视图递归向下，找出"该由哪个视图接这一下"，它成为链头。</li>
+        <li><b>经典用法：</b>target 传 <code>nil</code> 的 target-action，会自动沿链找第一个能响应的对象——最纯粹的"谁行谁上"。</li>
+        <li><b>心法：</b>链必须有尽头。没人接就等于事件静默丢失，这种 bug 不报错，最难查。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 精讲二 -->
+<section class="deep" id="deep2">
+  <div class="deep-head"><h3>策略 · 临阵换功法</h3><span class="en">Strategy</span></div>
+  <div class="alias">修士（Context）不变，变的是丹田里挂着哪门功法（Strategy）</div>
+  <figure style="margin-bottom:26px">
+    <svg viewBox="0 0 680 204" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>策略即临阵换功法</title>
+      <desc>同一位修士注入不同功法后，对同一敌手打出完全不同的效果</desc>
+      <defs>
+        <marker id="arrowB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <text x="340" y="26" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#5F5E5A">同一位修士，换一门功法，招数天差地别</text>
+
+      <rect x="40" y="44" width="180" height="56" rx="8" fill="#FAEEDA" stroke="#EF9F27" stroke-width="0.5"/>
+      <text x="130" y="64" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#854F0B">焚天诀</text>
+      <text x="130" y="82" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#BA7517">火灵根 · 大范围灼烧</text>
+
+      <rect x="250" y="44" width="180" height="56" rx="8" fill="#FAEEDA" stroke="#EF9F27" stroke-width="0.5"/>
+      <text x="340" y="64" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#854F0B">万剑归宗</text>
+      <text x="340" y="82" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#BA7517">剑修 · 单体破防</text>
+
+      <rect x="460" y="44" width="180" height="56" rx="8" fill="#FAEEDA" stroke="#EF9F27" stroke-width="0.5"/>
+      <text x="550" y="64" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#854F0B">金刚不坏</text>
+      <text x="550" y="82" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#BA7517">体修 · 免疫反伤</text>
+
+      <path d="M130 100 L130 132" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowB)"/>
+      <path d="M340 100 L340 132" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowB)"/>
+      <path d="M550 100 L550 132" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowB)"/>
+
+      <rect x="40" y="136" width="180" height="48" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+      <text x="130" y="160" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#085041">焚尽八百里</text>
+
+      <rect x="250" y="136" width="180" height="48" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+      <text x="340" y="160" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#085041">一剑破万法</text>
+
+      <rect x="460" y="136" width="180" height="48" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+      <text x="550" y="160" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#085041">万法不沾身</text>
+    </svg>
+    <figcaption>换功法不用换人 —— 运行时替换，无需重建 Context</figcaption>
+  </figure>
+
+  <ul class="pts two">
+    <li><b>三个角色。</b>抽象策略（协议）、若干具体策略、一个只持有抽象的 Context。</li>
+    <li><b>核心收益。</b>同一件事有多种算法，且需要按场景或配置切换时，用它替掉越写越长的 <code>if-else</code>。</li>
+    <li><b>判断拆干净没：</b>新增一种算法时，如果需要改 Context 的代码，说明还没拆干净。拆干净后，新增策略只需加一个新类型。</li>
+    <li><b>心法：</b>策略要无状态，不要反向持有 Context，否则循环引用跑不掉。</li>
+  </ul>
+</section>
+
+<!-- 精讲三 -->
+<section class="deep" id="deep3">
+  <div class="deep-head"><h3>工厂三兄弟</h3><span class="en">Factory · Abstract Factory · Builder</span></div>
+  <div class="alias">大家说的"工厂"其实混了三种东西，区别只在两个维度：几个工厂、几个产品</div>
+
+  <div class="grid2" style="margin-bottom:30px">
+    <article class="pat" style="padding:22px 24px">
+      <span class="badge create">简单工厂 · 炼器阁</span>
+      <h3 style="font-size:17px">报名字就取货</h3>
+      <p class="essence">掌柜的一个 <code>switch</code>，你说要剑就给剑，要丹就给丹。严格说它不是 GoF 模式，但工程里用得最多。</p>
+      <div class="foot"><div class="row warn"><span class="k">代价</span><span class="v">新增品种要改掌柜的 switch</span></div></div>
+    </article>
+    <article class="pat" style="padding:22px 24px">
+      <span class="badge create">工厂方法 · 师徒传承</span>
+      <h3 style="font-size:17px">师父定流程，徒弟定法宝</h3>
+      <p class="essence">师父规定"先筑基、再结丹、后凝婴"，但"本命法宝"必须徒弟自己炼。基类定流程，子类定产品。</p>
+      <div class="foot"><div class="row"><span class="k">原生</span><span class="v"><code>UIViewController.loadView()</code></span></div></div>
+    </article>
+  </div>
+
+  <figure style="margin-bottom:28px">
+    <svg viewBox="0 0 680 354" role="img" xmlns="http://www.w3.org/2000/svg">
+      <title>抽象工厂即道统传承</title>
+      <desc>每套道统产出一整族配套的功法、法宝与丹药，两套混搭会导致灵气冲突</desc>
+      <defs>
+        <marker id="arrowC" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <text x="40" y="26" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#5F5E5A">抽象工厂：一个道统，产出一整套配套的法门</text>
+
+      <rect x="240" y="42" width="200" height="56" rx="8" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5" stroke-dasharray="4 3"/>
+      <text x="340" y="64" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#0C447C">道统协议</text>
+      <text x="340" y="82" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#185FA5">造功法() 造法宝() 造丹药()</text>
+
+      <path d="M300 98 L200 132" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowC)"/>
+      <path d="M380 98 L480 132" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowC)"/>
+
+      <rect x="93" y="136" width="180" height="56" rx="8" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+      <text x="183" y="158" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#0C447C">火系道统</text>
+      <text x="183" y="176" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#185FA5">FireDoctrine</text>
+
+      <rect x="407" y="136" width="180" height="56" rx="8" fill="#E6F1FB" stroke="#378ADD" stroke-width="0.5"/>
+      <text x="497" y="158" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="14" font-weight="500" fill="#0C447C">水系道统</text>
+      <text x="497" y="176" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" fill="#185FA5">WaterDoctrine</text>
+
+      <path d="M183 192 L91 240" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowC)"/>
+      <path d="M183 192 L183 240" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowC)"/>
+      <path d="M183 192 L275 240" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowC)"/>
+      <path d="M497 192 L405 240" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowC)"/>
+      <path d="M497 192 L497 240" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowC)"/>
+      <path d="M497 192 L589 240" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arrowC)"/>
+
+      <rect x="28" y="206" width="310" height="104" rx="12" fill="#F1EFE8" stroke="#D3D1C7" stroke-width="0.5"/>
+      <text x="183" y="226" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#5F5E5A">火系道统 · 配套一整套</text>
+
+      <rect x="342" y="206" width="310" height="104" rx="12" fill="#F1EFE8" stroke="#D3D1C7" stroke-width="0.5"/>
+      <text x="497" y="226" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#5F5E5A">水系道统 · 配套一整套</text>
+
+      <rect x="49" y="244" width="84" height="48" rx="8" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
+      <text x="91" y="259" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="11" fill="#993C1D">功法</text>
+      <text x="91" y="277" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#712B13">焚天诀</text>
+
+      <rect x="141" y="244" width="84" height="48" rx="8" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
+      <text x="183" y="259" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="11" fill="#993C1D">法宝</text>
+      <text x="183" y="277" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#712B13">离火剑</text>
+
+      <rect x="233" y="244" width="84" height="48" rx="8" fill="#FAECE7" stroke="#D85A30" stroke-width="0.5"/>
+      <text x="275" y="259" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="11" fill="#993C1D">丹药</text>
+      <text x="275" y="277" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#712B13">赤炎丹</text>
+
+      <rect x="363" y="244" width="84" height="48" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+      <text x="405" y="259" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="11" fill="#0F6E56">功法</text>
+      <text x="405" y="277" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#085041">寒冰诀</text>
+
+      <rect x="455" y="244" width="84" height="48" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+      <text x="497" y="259" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="11" fill="#0F6E56">法宝</text>
+      <text x="497" y="277" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#085041">玄水剑</text>
+
+      <rect x="547" y="244" width="84" height="48" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+      <text x="589" y="259" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="11" fill="#0F6E56">丹药</text>
+      <text x="589" y="277" text-anchor="middle" dominant-baseline="central" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#085041">清心丹</text>
+
+      <text x="340" y="334" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="500" fill="#A32D2D">两套混搭 → 灵气冲突，走火入魔</text>
+    </svg>
+    <figcaption>抽象工厂的核心价值：保证同一族产品互相配套，杜绝混搭</figcaption>
+  </figure>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th></th><th>简单工厂</th><th>工厂方法</th><th>抽象工厂</th></tr></thead>
+      <tbody>
+        <tr><td>产品维度</td><td>1 工厂 → N 产品</td><td>N 工厂 → 各 1 产品</td><td>N 工厂 → 各 M 产品</td></tr>
+        <tr><td>修仙比喻</td><td>炼器阁</td><td>师徒传承</td><td>道统传承</td></tr>
+        <tr><td>新增产品种类</td><td>改 switch</td><td>加子类</td><td style="color:var(--red600);font-weight:500">改协议 + 所有具体工厂</td></tr>
+        <tr><td>新增产品族</td><td>—</td><td>加子类</td><td>加一个具体工厂</td></tr>
+        <tr><td>是否 GoF 模式</td><td>否</td><td>是</td><td>是</td></tr>
+        <tr><td>iOS 例子</td><td><code>UIButton(type:)</code></td><td><code>loadView()</code></td><td><code>NSPersistentContainer</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 实战串联 -->
+<section class="vol" id="battle">
+  <div class="vol-head">
+    <span class="cn">实 战</span>
+    <h2>一场战斗：三个模式同时出场</h2>
+  </div>
+  <p class="vol-sub">你在 App 里点了一下「立即支付」，接下来发生的事。</p>
+  <div class="battle">
+    <p>那一指就是<b>一纸战书</b>。<span class="hl-blue">hitTest</span> 先当山门守卫，从根视图一层层往下点名，找到"该由哪个视图接这一下"；然后事件沿着<span class="hl-blue">响应链</span>往上递，直到某个 ViewController 说「我管」。</p>
+    <p>ViewController 去<span class="hl-blue">炼器阁</span>报个名字，取回一个支付渠道（简单工厂）。渠道内部又持有一条风控校验链——先查限额、再查黑名单、最后查风控等级，<b>哪一环拦下，后面的就不跑了</b>（责任链）。</p>
+    <p>算手续费时再<span class="hl-amber">换一门功法</span>：境内 0.6%、境外 1.2%。人还是那个人，功换一门（策略）。</p>
+    <p>而整个支付页的颜色、字体、文案，由一套<span class="hl-teal">道统</span>统一供给（抽象工厂）——切到"春节皮肤"就是整套换掉，<b>绝不会出现红底配绿字这种走火入魔</b>。</p>
+  </div>
+</section>
+
+<!-- 心法 -->
+<section class="vol" id="laws">
+  <div class="vol-head">
+    <span class="cn">心 法</span>
+    <h2>四条最贵的坑</h2>
+  </div>
+  <p class="vol-sub">这四个坑，踩过一次就够。</p>
+  <div class="grid4">
+    <div class="law">
+      <div class="lbl">责 任 链</div>
+      <h4>链必须有尽头</h4>
+      <p>战书一路递到天上都没人接，等于事件静默丢失。这类 bug 不报错，最难查——务必保证每个节点最终要么处理、要么把 next 走到 nil。</p>
+    </div>
+    <div class="law">
+      <div class="lbl">策 略</div>
+      <h4>换功法别把人换了</h4>
+      <p>策略应当无状态、单向依赖。策略内部再反向持有 Context，循环引用跑不掉，也说明职责划分出了问题。</p>
+    </div>
+    <div class="law">
+      <div class="lbl">抽 象 工 厂</div>
+      <h4>道统不是越多越好</h4>
+      <p>产品族的成员一多，加一个新成员就要改协议 + 所有具体工厂。它对"新增产品族"开放，对"新增产品"封闭性很差。</p>
+    </div>
+    <div class="law">
+      <div class="lbl">简 单 工 厂</div>
+      <h4>凡人的智慧也是智慧</h4>
+      <p>那个 switch 确实违反开闭原则，但零心智负担、一眼看懂。产品种类少且稳定时，它就是最优解，别看不起它。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 附录 ==================== -->
+<section class="vol" id="cheat">
+  <div class="vol-head">
+    <span class="cn">附 录 一</span>
+    <h2>全模式速查表</h2>
+  </div>
+  <p class="vol-sub">20 个模式一表打尽。复习时只看这张表就够：左边是修仙场景，中间是一句话本质，右边是 iOS 落点。</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr><th>模式</th><th>凡人修仙传 · 场景</th><th>一句话本质</th><th>iOS 落点</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>工厂</td><td>炼丹房</td><td>报名字拿成品，屏蔽创建过程</td><td><code>UIButton(type:)</code></td></tr>
+        <tr><td>抽象工厂</td><td>门派制式体系</td><td>一个工厂产出一整族配套产品</td><td><code>NSPersistentContainer</code></td></tr>
+        <tr><td>建造者</td><td>炼制本命法宝</td><td>把复杂对象的构建拆成有序步骤</td><td><code>URLComponents</code></td></tr>
+        <tr class="newrow"><td>单例</td><td>掌天瓶</td><td>全局唯一实例 + 全局访问点</td><td><code>UIApplication.shared</code></td></tr>
+        <tr><td>适配器</td><td>灵石兑换阵</td><td>把不兼容接口包装成期望接口</td><td>第三方 SDK 封装</td></tr>
+        <tr><td>装饰器</td><td>给法宝叠禁制</td><td>不改原类，动态叠加职责</td><td>View 叠圆角+阴影、Combine 链</td></tr>
+        <tr><td>外观</td><td>万宝楼</td><td>给复杂子系统一个统一入口</td><td><code>UIImagePickerController</code></td></tr>
+        <tr><td>代理</td><td>傀儡</td><td>用替身控制对真实对象的访问</td><td>懒加载、<code>NSProxy</code></td></tr>
+        <tr class="newrow"><td>组合</td><td>阵法套阵</td><td>树形结构，叶子与容器一视同仁</td><td><code>UIView</code> 层级、<code>CALayer</code></td></tr>
+        <tr class="newrow"><td>桥接</td><td>法宝形态 × 催动法诀</td><td>抽象与实现分离，两者独立变化</td><td>协议 + 多实现自由组合</td></tr>
+        <tr><td>责任链</td><td>拜山门通报</td><td>请求逐个传递，谁处理谁截断</td><td><code>UIResponder</code> 响应链</td></tr>
+        <tr><td>观察者</td><td>传讯符</td><td>一对多，一变全通知</td><td><code>NotificationCenter</code></td></tr>
+        <tr><td>委托</td><td>托付与指派</td><td>一对一回调，把"怎么做"交出去</td><td><code>UITableViewDelegate</code></td></tr>
+        <tr><td>策略</td><td>临阵换功法</td><td>一族算法里挑一个执行</td><td><code>keyDecodingStrategy</code></td></tr>
+        <tr><td>备忘录</td><td>留影玉简</td><td>捕获内部状态，以便日后恢复</td><td><code>UndoManager</code></td></tr>
+        <tr class="newrow"><td>迭代器</td><td>神识扫视</td><td>统一"下一个"，屏蔽内部表示</td><td><code>Sequence</code> / <code>for...in</code></td></tr>
+        <tr><td>MVC</td><td>掌门 + 弟子 + 藏经阁</td><td>Controller 居中调度，View 易越权</td><td>UIKit 原生</td></tr>
+        <tr><td>MVP</td><td>长老 + 传令弟子</td><td>View 与 Model 彻底隔离，好测</td><td>手写协议</td></tr>
+        <tr><td>MVVM</td><td>韩立 + 傀儡</td><td>双向绑定，状态一变界面自动变</td><td>SwiftUI + Combine</td></tr>
+        <tr><td>TCA</td><td>宗门朝议制度</td><td>单向数据流，只有 Reducer 能改状态</td><td>The Composable Architecture</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="vol" id="mantra">
+  <div class="vol-head">
+    <span class="cn">附 录 二</span>
+    <h2>心法总汇</h2>
+  </div>
+  <p class="vol-sub">20 条一句话心法。复习时只看这里，每条都是一个真实的坑。</p>
+  <div class="mantra-grid">
+    <div class="m"><span class="k">工厂</span><span class="v">新增品种就得改那个 switch，接受它，或者换成注册表</span></div>
+    <div class="m"><span class="k">抽象工厂</span><span class="v">对"新增产品族"开放，对"新增产品"封闭性差</span></div>
+    <div class="m"><span class="k">建造者</span><span class="v">管"怎么一步步造"；工厂管"造哪一个"</span></div>
+    <div class="m"><span class="k">单例</span><span class="v">就是全局状态，测试和多线程都要留神</span></div>
+    <div class="m"><span class="k">适配器</span><span class="v">只翻译接口，不改变行为</span></div>
+    <div class="m"><span class="k">装饰器</span><span class="v">必须与被装饰对象同接口，否则套不上</span></div>
+    <div class="m"><span class="k">外观</span><span class="v">只是给条捷径，不禁止你直接访问子系统</span></div>
+    <div class="m"><span class="k">代理</span><span class="v">代理加逻辑，适配器不加逻辑</span></div>
+    <div class="m"><span class="k">组合</span><span class="v">叶子与容器必须同接口，否则上层就得写 if-else</span></div>
+    <div class="m"><span class="k">桥接</span><span class="v">只有一个维度会变时，别用</span></div>
+    <div class="m"><span class="k">责任链</span><span class="v">链必须有尽头，否则事件静默丢失</span></div>
+    <div class="m"><span class="k">观察者</span><span class="v">订阅了就要取消订阅</span></div>
+    <div class="m"><span class="k">委托</span><span class="v">delegate 必须 weak</span></div>
+    <div class="m"><span class="k">策略</span><span class="v">策略要无状态，别反向持有 Context</span></div>
+    <div class="m"><span class="k">备忘录</span><span class="v">快照不可变；存了要记得恢复</span></div>
+    <div class="m"><span class="k">迭代器</span><span class="v">实现 Sequence，就白拿一整套高阶函数</span></div>
+    <div class="m"><span class="k">MVC</span><span class="v">别让 View 直接碰 Model</span></div>
+    <div class="m"><span class="k">MVP</span><span class="v">逻辑可测的代价，是一堆胶水代码</span></div>
+    <div class="m"><span class="k">MVVM</span><span class="v">绑定是双刃剑，状态流向必须清楚</span></div>
+    <div class="m"><span class="k">TCA</span><span class="v">单向数据流换来可追溯，代价是样板量</span></div>
+  </div>
+</section>
+
+<footer>
+  <div class="fin">记住场景，比记住名字有用。真正写代码时，你想起的不会是"这里该用观察者模式"，而是"这里需要一张传讯符"。</div>
+  <div class="meta">凡人修仙传 · 设计模式全解（完整手册） &nbsp;|&nbsp; 20 个模式 &nbsp;|&nbsp; 2026-10-12</div>
+</footer>
+
+</div>
+</body>
+</html>
